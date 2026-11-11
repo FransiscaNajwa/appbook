@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fdfbf7" />
+    <title>Reading Tracker — Jurnal baca senjamu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <section id="lock-screen" class="lock-screen">
+        <div class="lock-card">
+          <div class="brand-mark">☼</div>
+          <p class="eyebrow">Reading Tracker</p>
+          <h1>Ruang baca yang tenang.</h1>
+          <p class="muted">Masukkan passcode pribadi untuk membuka jurnal bacamu.</p>
+          <form id="unlock-form" class="stack">
+            <label for="passcode">Passcode</label>
+            <input id="passcode" data-testid="passcode-input" type="password" minlength="4" autocomplete="current-password" placeholder="Masukkan passcode" required />
+            <p id="unlock-error" class="form-error" role="alert"></p>
+            <button class="button primary wide" data-testid="unlock-submit" type="submit">Buka jurnal <span>→</span></button>
+          </form>
+          <small class="muted">Demo lokal: passcode pertama akan disimpan di perangkat ini.</small>
+        </div>
+      </section>
+
+      <div id="main-app" class="hidden">
+        <header class="topbar">
+          <a class="wordmark" href="#koleksi" data-route="koleksi"><span class="brand-mark small">☼</span> Reading Tracker</a>
+          <div class="topbar-actions">
+            <span id="offline-pill" class="status-pill"><i></i> Online</span>
+            <button id="lock-button" class="icon-button" aria-label="Kunci aplikasi" title="Kunci aplikasi">⌑</button>
+          </div>
+        </header>
+
+        <main class="shell">
+          <section id="page-koleksi" class="page" data-page="koleksi">
+            <div class="page-heading">
+              <div>
+                <p class="eyebrow">Selamat datang kembali</p>
+                <h1>Selamat sore, pembaca.</h1>
+                <p class="muted">Lanjutkan cerita yang sedang kamu jalani.</p>
+              </div>
+              <button id="add-book-button" data-testid="add-book-button" class="button primary"><span class="plus">+</span> Tambah buku</button>
+            </div>
+
+            <div class="stats-grid">
+              <article class="stat-card accent">
+                <div class="stat-icon">◒</div>
+                <div><span class="stat-label">Sedang dibaca</span><strong id="reading-count">0 buku</strong></div>
+                <span class="stat-decoration">✦</span>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon purple">◷</div>
+                <div><span class="stat-label">Halaman minggu ini</span><strong id="weekly-pages">0 halaman</strong></div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon green">☀</div>
+                <div><span class="stat-label">Streak membaca</span><strong id="streak-count">0 hari</strong></div>
+              </article>
+            </div>
+
+            <section class="section-block">
+              <div class="section-heading">
+                <div><h2>Sedang dibaca <span id="reading-heading-count" class="count-badge">0</span></h2><p class="muted">Jejak kecil yang berarti.</p></div>
+                <div class="filter-tabs" role="tablist">
+                  <button class="filter-tab active" data-filter="reading">Sedang dibaca</button>
+                  <button class="filter-tab" data-filter="finished">Selesai</button>
+                  <button class="filter-tab" data-filter="all">Semua</button>
+                </div>
+              </div>
+              <div id="book-list" data-testid="book-list" class="book-list"></div>
+            </section>
+
+            <section id="goal-widget" class="goal-widget">
+              <div class="goal-copy"><span class="goal-icon">✧</span><div><p class="eyebrow">Target minggu ini</p><h3 id="goal-title">Belum ada target</h3><p id="goal-subtitle" class="muted">Buat target kecil agar langkahmu terasa.</p></div></div>
+              <button class="button outline" data-route="target">Atur target</button>
+            </section>
+          </section>
+
+          <section id="page-statistik" class="page hidden" data-page="statistik">
+            <div class="page-heading"><div><p class="eyebrow">Melihat ke belakang</p><h1>Statistik membaca.</h1><p class="muted">Kebiasaan kecilmu, dirangkai menjadi cerita.</p></div></div>
+            <div class="stats-grid">
+              <article class="stat-card accent"><div class="stat-icon">✓</div><div><span class="stat-label">Buku selesai tahun ini</span><strong id="finished-count">0 buku</strong></div></article>
+              <article class="stat-card"><div class="stat-icon purple">▥</div><div><span class="stat-label">Total sesi</span><strong id="session-count">0 sesi</strong></div></article>
+              <article class="stat-card"><div class="stat-icon green">⌁</div><div><span class="stat-label">Total halaman</span><strong id="total-pages">0 halaman</strong></div></article>
+            </div>
+            <div class="analytics-grid">
+              <article class="panel"><div class="panel-heading"><div><h2>Aktivitas minggu ini</h2><p class="muted">Halaman yang kamu baca</p></div><span class="chart-total" id="chart-total">0 hal.</span></div><div id="week-chart" class="week-chart"></div></article>
+              <article class="panel"><div class="panel-heading"><div><h2>Genre favorit</h2><p class="muted">Dari koleksi bukumu</p></div></div><div id="genre-chart" class="genre-chart"></div></article>
+            </div>
+          </section>
+
+          <section id="page-target" class="page hidden" data-page="target">
+            <div class="page-heading"><div><p class="eyebrow">Ritme yang kamu pilih</p><h1>Target & pengingat.</h1><p class="muted">Jadikan membaca bagian lembut dari harimu.</p></div></div>
+            <div class="settings-grid" data-testid="target-settings">
+              <article class="panel form-panel"><div class="panel-heading"><div><h2>Target aktif</h2><p class="muted">Satu target sederhana untuk minggu ini.</p></div><span class="goal-icon">✧</span></div><form id="goal-form" class="stack"><label for="goal-type">Jenis target</label><select id="goal-type"><option value="books">Buku selesai per minggu</option><option value="pages">Halaman per hari</option></select><label for="goal-value">Jumlah target</label><input id="goal-value" type="number" min="1" max="999" required placeholder="Contoh: 3" /><button class="button primary" type="submit">Simpan target</button></form></article>
+              <article class="panel form-panel"><div class="panel-heading"><div><h2>Pengingat baca</h2><p class="muted">Notifikasi lokal di browser ini.</p></div><span class="reminder-toggle"><input id="reminder-enabled" type="checkbox" /><label for="reminder-enabled"></label></span></div><div class="stack"><label for="reminder-time">Waktu pengingat</label><input id="reminder-time" type="time" value="20:00" /><label>Hari pengingat</label><div id="day-picker" class="day-picker"></div><p id="notification-status" class="helper"></p><button id="notification-button" class="button outline" type="button">Izinkan notifikasi</button></div></article>
+            </div>
+          </section>
+        </main>
+
+        <nav class="bottom-nav" aria-label="Navigasi utama">
+          <a href="#koleksi" data-route="koleksi" class="nav-item active"><span>⌂</span><small>Koleksi</small></a>
+          <a href="#statistik" data-route="statistik" class="nav-item"><span>◒</span><small>Statistik</small></a>
+          <a href="#target" data-route="target" class="nav-item"><span>✧</span><small>Target</small></a>
+        </nav>
+      </div>
+    </div>
+
+    <div id="book-modal" class="modal hidden" data-testid="book-modal" role="dialog" aria-modal="true" aria-labelledby="book-modal-title">
+      <div class="modal-card"><button class="modal-close" data-close-modal aria-label="Tutup">×</button><p class="eyebrow">Koleksi baru</p><h2 id="book-modal-title">Tambahkan buku.</h2><p class="muted">Simpan detailnya, lalu mulai catat perjalananmu.</p><form id="book-form" class="stack"><label for="book-title">Judul buku <span>*</span></label><input id="book-title" required maxlength="120" placeholder="Contoh: Laut Bercerita" /><label for="book-author">Penulis</label><input id="book-author" maxlength="80" placeholder="Nama penulis" /><div class="form-row"><div class="stack"><label for="book-genre">Genre <span>*</span></label><select id="book-genre" required><option value="">Pilih genre</option><option>Fiksi</option><option>Non-fiksi</option><option>Pengembangan diri</option><option>Biografi</option><option>Romansa</option><option>Misteri</option><option>Fantasi</option><option>Sejarah</option><option>Lainnya</option></select></div><div class="stack"><label for="book-pages">Total halaman</label><input id="book-pages" type="number" min="1" max="99999" placeholder="Opsional" /></div></div><label for="book-summary">Ringkasan <span class="char-count"><b id="summary-count">0</b>/500</span></label><textarea id="book-summary" maxlength="500" rows="3" placeholder="Apa yang ingin kamu ingat dari buku ini?"></textarea><button class="button primary wide" type="submit">Simpan buku <span>→</span></button></form></div>
+    </div>
+
+    <div id="log-modal" class="modal hidden" data-testid="log-modal" role="dialog" aria-modal="true" aria-labelledby="log-modal-title">
+      <div class="modal-card"><button class="modal-close" data-close-modal aria-label="Tutup">×</button><p class="eyebrow">Catat sesi baca</p><h2 id="log-modal-title">Bagaimana progresmu?</h2><p id="log-book-name" class="muted"></p><form id="log-form" class="stack"><label for="log-page">Terakhir sampai halaman</label><div class="page-input"><input id="log-page" type="number" min="0" required /><button type="button" class="quick-add" data-add-page="10">+10</button></div><p id="page-hint" class="helper"></p><label for="log-note">Catatan sesi <span class="muted">(opsional)</span></label><textarea id="log-note" maxlength="300" rows="3" placeholder="Satu hal yang ingin kamu ingat..."></textarea><button class="button primary wide" type="submit">Simpan sesi <span>→</span></button></form></div>
+    </div>
+    <div id="toast" class="toast" role="status"></div>
+    <script src="app.js"></script>
+  </body>
+</html>

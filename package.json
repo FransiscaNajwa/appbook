@@ -1,0 +1,20 @@
+{
+  "name": "reading-tracker",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Reading Tracker Netlify Functions API",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:ci": "playwright test --reporter=line"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
+  }
+}
