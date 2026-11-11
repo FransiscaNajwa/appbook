@@ -11,8 +11,8 @@ const book = {
   reading_logs: [],
 };
 
-function installApiFixture(page) {
-  let state = { books: [{ ...book, reading_logs: [] }], settings: { goal: null, reminder: { enabled: false, time: "20:00", days: [1, 2, 3, 4, 5] } } };
+function installApiFixture(page, options = {}) {
+  let state = { books: options.books ?? [{ ...book, reading_logs: [] }], settings: { goal: null, reminder: { enabled: false, time: "20:00", days: [1, 2, 3, 4, 5] } } };
   return page.route("**/api/**", async (route) => {
     const request = route.request();
     const headers = request.headers();
@@ -101,4 +101,26 @@ test("saves a reading goal through the API", async ({ page }) => {
   await page.locator("#goal-value").fill("3");
   await page.locator("#goal-form button[type=submit]").click();
   await expect(page.locator("#goal-value")).toHaveValue("3");
+});
+
+test("shows an error for an incorrect passcode", async ({ page }) => {
+  await page.getByTestId("passcode-input").fill("wrong-passcode");
+  await page.getByTestId("unlock-submit").click();
+  await expect(page.locator("#unlock-error")).toHaveText("Passcode tidak cocok.");
+});
+
+test("shows a friendly error when the API is unavailable", async ({ page }) => {
+  await page.unroute("**/api/**");
+  await page.route("**/api/**", (route) => route.abort());
+  await page.getByTestId("passcode-input").fill(passcode);
+  await page.getByTestId("unlock-submit").click();
+  await expect(page.locator("#unlock-error")).toHaveText("Backend belum terhubung. Periksa konfigurasi Netlify.");
+});
+
+test("shows the empty collection state", async ({ page }) => {
+  await page.unroute("**/api/**");
+  await installApiFixture(page, { books: [] });
+  await page.goto("/");
+  await unlock(page);
+  await expect(page.getByText("Belum ada buku di rak senjamu.")).toBeVisible();
 });
