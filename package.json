@@ -7,6 +7,7 @@
     "node": ">=18"
   },
   "scripts": {
+    "dev": "netlify dev",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:ci": "playwright test --reporter=line"
@@ -15,6 +16,7 @@
     "@supabase/supabase-js": "^2.57.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.56.1"
+    "@playwright/test": "^1.56.1",
+    "netlify-cli": "^23.10.0"
   }
 }

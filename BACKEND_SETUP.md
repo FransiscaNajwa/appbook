@@ -11,6 +11,8 @@ Backend memakai Netlify Functions dan Supabase PostgreSQL.
 5. Isi `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `APP_PASSCODE`, dan `ALLOWED_ORIGINS`.
 6. Deploy folder ini ke Netlify. `netlify.toml` sudah mengarahkan `/api/*` ke function.
 
+Untuk menjalankan lokal, gunakan `npm run dev`. Jika npm menampilkan `EPERM` pada cache global Windows, jalankan `npm install --cache .npm-cache` agar cache berada di folder project.
+
 ## API
 
 Semua request selain `OPTIONS` harus mengirim header `X-App-Passcode`.

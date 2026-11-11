@@ -1,7 +1,11 @@
 node_modules/
+.npm-cache/
 .env
 .env.*
 !.env.example
 test-results/
 playwright-report/
 .last-run.json
+
+# Local Netlify folder
+.netlify
