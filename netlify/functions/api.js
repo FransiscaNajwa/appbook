@@ -1,4 +1,3 @@
-const crypto = require("node:crypto");
 const { createClient } = require("@supabase/supabase-js");
 
 const attempts = new Map();
@@ -6,12 +5,11 @@ const WINDOW_MS = 60_000;
 const MAX_ATTEMPTS = 10;
 
 function config() {
-  const required = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "APP_PASSCODE"];
+  const required = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
   const missing = required.filter((key) => !process.env[key]);
   if (missing.length) throw new Error(`Missing server configuration: ${missing.join(", ")}`);
   return {
     supabase: createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } }),
-    passcode: process.env.APP_PASSCODE,
     origins: (process.env.ALLOWED_ORIGINS || "").split(",").map((origin) => origin.trim()).filter(Boolean),
   };
 }
@@ -21,7 +19,7 @@ function originHeaders(event, allowedOrigins) {
   const headers = { "Content-Type": "application/json", "Cache-Control": "no-store", Vary: "Origin" };
   if (origin && allowedOrigins.includes(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
-    headers["Access-Control-Allow-Headers"] = "Content-Type, X-App-Passcode";
+    headers["Access-Control-Allow-Headers"] = "Content-Type";
     headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, DELETE, OPTIONS";
   }
   return headers;
@@ -47,16 +45,6 @@ function checkRateLimit(event) {
   return record.count <= MAX_ATTEMPTS;
 }
 
-function safeEqual(left, right) {
-  const a = Buffer.from(String(left));
-  const b = Buffer.from(String(right));
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
-}
-
-function authenticated(event, passcode) {
-  return safeEqual(event.headers["x-app-passcode"] || event.headers["X-App-Passcode"] || "", passcode);
-}
-
 function parseBody(event) {
   try { return event.body ? JSON.parse(event.body) : {}; } catch { return null; }
 }
@@ -79,8 +67,6 @@ exports.handler = async (event) => {
   try { settings = config(); } catch (error) { return response(event, 500, { error: "Server is not configured" }, []); }
   if (event.httpMethod === "OPTIONS") return response(event, 204, undefined, settings.origins);
   if (!checkRateLimit(event)) return response(event, 429, { error: "Too many requests. Try again later." }, settings.origins);
-  if (!authenticated(event, settings.passcode)) return response(event, 401, { error: "Unauthorized" }, settings.origins);
-
   const path = (event.path || "").replace(/^\/\.netlify\/functions\/api/, "").replace(/^\/api/, "") || "/";
   const parts = path.split("/").filter(Boolean);
   const { supabase } = settings;

@@ -1,5 +1,4 @@
 const API_BASE = "/api";
-const PASSCODE_KEY = "reading-tracker-passcode";
 const CACHE_KEY = "reading-tracker-cache";
 const genres = ["Fiksi", "Non-fiksi", "Pengembangan diri", "Biografi", "Romansa", "Misteri", "Fantasi", "Sejarah", "Lainnya"];
 const initialData = { books: [], goal: null, reminder: { enabled: false, time: "20:00", days: [1, 2, 3, 4, 5] } };
@@ -28,8 +27,7 @@ function setLoading(loading) { $("#book-list").classList.toggle("loading", loadi
 function setOffline(offline) { $("#offline-pill").classList.toggle("offline", offline); $("#offline-pill").innerHTML = `<i></i> ${offline ? "Offline" : "Online"}`; }
 
 async function api(path, options = {}) {
-  const passcode = localStorage.getItem(PASSCODE_KEY);
-  const response = await fetch(`${API_BASE}${path}`, { ...options, headers: { "Content-Type": "application/json", "X-App-Passcode": passcode || "", ...(options.headers || {}) } });
+  const response = await fetch(`${API_BASE}${path}`, { ...options, headers: { "Content-Type": "application/json", ...(options.headers || {}) } });
   let body = null;
   try { body = await response.json(); } catch { /* empty response */ }
   if (!response.ok) throw new Error(body?.error || `Request failed (${response.status})`);
@@ -48,26 +46,6 @@ async function persistSettings() {
   data.reminder = response.settings.reminder || initialData.reminder;
   saveCache();
 }
-async function unlockWithApi(passcode) {
-  localStorage.setItem(PASSCODE_KEY, passcode);
-  try { await syncFromApi(); return true; }
-  catch (error) { localStorage.removeItem(PASSCODE_KEY); throw error; }
-}
-function showApp() { $("#lock-screen").classList.add("hidden"); $("#main-app").classList.remove("hidden"); render(); }
-
-$("#unlock-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const input = $("#passcode").value.trim();
-  if (!input) return;
-  const button = event.submitter;
-  button.disabled = true;
-  $("#unlock-error").textContent = "";
-  try { await unlockWithApi(input); $("#passcode").value = ""; showApp(); }
-  catch (error) { $("#unlock-error").textContent = error.message === "Unauthorized" ? "Passcode tidak cocok." : "Backend belum terhubung. Periksa konfigurasi Netlify."; }
-  finally { button.disabled = false; }
-});
-$("#lock-button").addEventListener("click", () => { localStorage.removeItem(PASSCODE_KEY); $("#main-app").classList.add("hidden"); $("#lock-screen").classList.remove("hidden"); });
-
 async function refreshData() {
   setLoading(true);
   try { await syncFromApi(); render(); setOffline(false); }
@@ -137,5 +115,5 @@ $("#day-picker").addEventListener("click", async (event) => { if (!event.target.
 $("#notification-button").addEventListener("click", async () => { if (!("Notification" in window)) { showToast("Browser ini belum mendukung notifikasi."); return; } const permission = await Notification.requestPermission(); renderSettings(); showToast(permission === "granted" ? "Notifikasi berhasil diizinkan." : "Izin notifikasi belum diberikan."); });
 window.addEventListener("online", refreshData); window.addEventListener("offline", () => setOffline(true));
 
-const savedPasscode = localStorage.getItem(PASSCODE_KEY);
-if (savedPasscode) { showApp(); refreshData(); }
+render();
+refreshData();

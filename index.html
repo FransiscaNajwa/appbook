@@ -12,28 +12,11 @@
   </head>
   <body>
     <div id="app">
-      <section id="lock-screen" class="lock-screen">
-        <div class="lock-card">
-          <div class="brand-mark">☼</div>
-          <p class="eyebrow">Reading Tracker</p>
-          <h1>Ruang baca yang tenang.</h1>
-          <p class="muted">Masukkan passcode pribadi untuk membuka jurnal bacamu.</p>
-          <form id="unlock-form" class="stack">
-            <label for="passcode">Passcode</label>
-            <input id="passcode" data-testid="passcode-input" type="password" minlength="4" autocomplete="current-password" placeholder="Masukkan passcode" required />
-            <p id="unlock-error" class="form-error" role="alert"></p>
-            <button class="button primary wide" data-testid="unlock-submit" type="submit">Buka jurnal <span>→</span></button>
-          </form>
-          <small class="muted">Demo lokal: passcode pertama akan disimpan di perangkat ini.</small>
-        </div>
-      </section>
-
-      <div id="main-app" class="hidden">
+      <div id="main-app">
         <header class="topbar">
           <a class="wordmark" href="#koleksi" data-route="koleksi"><span class="brand-mark small">☼</span> Reading Tracker</a>
           <div class="topbar-actions">
             <span id="offline-pill" class="status-pill"><i></i> Online</span>
-            <button id="lock-button" class="icon-button" aria-label="Kunci aplikasi" title="Kunci aplikasi">⌑</button>
           </div>
         </header>
 

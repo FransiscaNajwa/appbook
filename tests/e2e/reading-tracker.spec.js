@@ -1,6 +1,5 @@
 const { test, expect } = require("@playwright/test");
 
-const passcode = "e2e-test-passcode";
 const book = {
   id: "book-1",
   title: "Laut Bercerita",
@@ -15,8 +14,6 @@ function installApiFixture(page, options = {}) {
   let state = { books: options.books ?? [{ ...book, reading_logs: [] }], settings: { goal: null, reminder: { enabled: false, time: "20:00", days: [1, 2, 3, 4, 5] } } };
   return page.route("**/api/**", async (route) => {
     const request = route.request();
-    const headers = request.headers();
-    if (headers["x-app-passcode"] !== passcode) return route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ error: "Unauthorized" }) });
     const url = new URL(request.url());
     const path = url.pathname.replace("/api", "");
     if (request.method() === "GET" && path === "/books") return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ books: state.books }) });
@@ -45,8 +42,6 @@ function installApiFixture(page, options = {}) {
 }
 
 async function unlock(page) {
-  await page.getByTestId("passcode-input").fill(passcode);
-  await page.getByTestId("unlock-submit").click();
   await expect(page.getByTestId("book-list")).toBeVisible();
 }
 
@@ -103,18 +98,11 @@ test("saves a reading goal through the API", async ({ page }) => {
   await expect(page.locator("#goal-value")).toHaveValue("3");
 });
 
-test("shows an error for an incorrect passcode", async ({ page }) => {
-  await page.getByTestId("passcode-input").fill("wrong-passcode");
-  await page.getByTestId("unlock-submit").click();
-  await expect(page.locator("#unlock-error")).toHaveText("Passcode tidak cocok.");
-});
-
 test("shows a friendly error when the API is unavailable", async ({ page }) => {
   await page.unroute("**/api/**");
   await page.route("**/api/**", (route) => route.abort());
-  await page.getByTestId("passcode-input").fill(passcode);
-  await page.getByTestId("unlock-submit").click();
-  await expect(page.locator("#unlock-error")).toHaveText("Backend belum terhubung. Periksa konfigurasi Netlify.");
+  await page.reload();
+  await expect(page.getByRole("status")).toContainText("Gagal memuat data");
 });
 
 test("shows the empty collection state", async ({ page }) => {
