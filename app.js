@@ -49,7 +49,15 @@ async function persistSettings() {
 async function refreshData() {
   setLoading(true);
   try { await syncFromApi(); render(); setOffline(false); }
-  catch (error) { setOffline(true); showToast(`Gagal memuat data: ${error.message}`); }
+  catch (error) {
+    setOffline(true);
+    const message = error.message === "Server is not configured"
+      ? "Konfigurasi backend Netlify belum lengkap."
+      : error instanceof TypeError
+        ? "Tidak dapat terhubung ke backend Netlify."
+        : `Gagal memuat data: ${error.message}`;
+    showToast(message);
+  }
   finally { setLoading(false); }
 }
 function render() { renderBooks(); renderStats(); renderGoal(); renderSettings(); route(location.hash.slice(1) || "koleksi"); }

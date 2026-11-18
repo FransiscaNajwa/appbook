@@ -63,6 +63,15 @@ function validateLog(input) {
 }
 
 exports.handler = async (event) => {
+  const healthPath = (event.path || "").replace(/^\/\.netlify\/functions\/api/, "").replace(/^\/api/, "") || "/";
+  if (healthPath === "/health" && event.httpMethod === "GET") {
+    const required = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
+    const missing = required.filter((key) => !process.env[key]);
+    return response(event, missing.length ? 503 : 200, {
+      status: missing.length ? "missing_configuration" : "ok",
+      missing,
+    }, (process.env.ALLOWED_ORIGINS || "").split(",").map((origin) => origin.trim()).filter(Boolean));
+  }
   let settings;
   try { settings = config(); } catch (error) { return response(event, 500, { error: "Server is not configured" }, []); }
   if (event.httpMethod === "OPTIONS") return response(event, 204, undefined, settings.origins);

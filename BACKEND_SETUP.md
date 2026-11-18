@@ -17,6 +17,7 @@ Untuk menjalankan lokal, gunakan `npm run dev`. Jika npm menampilkan `EPERM` pad
 
 - `GET /api/books`
 - `GET /api/settings`
+- `GET /api/health`
 - `POST /api/books`
 - `POST /api/books/:bookId/logs`
 - `PATCH /api/books/:bookId` dengan body `{ "status": "reading" | "finished" }`
