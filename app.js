@@ -52,9 +52,9 @@ async function refreshData() {
   catch (error) {
     setOffline(true);
     const message = error.message === "Server is not configured"
-      ? "Konfigurasi backend Netlify belum lengkap."
+      ? "Konfigurasi backend Vercel belum lengkap."
       : error instanceof TypeError
-        ? "Tidak dapat terhubung ke backend Netlify."
+        ? "Tidak dapat terhubung ke backend Vercel."
         : `Gagal memuat data: ${error.message}`;
     showToast(message);
   }

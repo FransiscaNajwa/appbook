@@ -102,7 +102,7 @@ test("shows a friendly error when the API is unavailable", async ({ page }) => {
   await page.unroute("**/api/**");
   await page.route("**/api/**", (route) => route.abort());
   await page.reload();
-  await expect(page.getByRole("status")).toContainText("Tidak dapat terhubung ke backend Netlify.");
+  await expect(page.getByRole("status")).toContainText("Tidak dapat terhubung ke backend Vercel.");
 });
 
 test("shows the empty collection state", async ({ page }) => {
